@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Ewidencja Czasu Pracy"
+rootProject.name = "EwidencjaCzasuPracy"
 include(":app")
