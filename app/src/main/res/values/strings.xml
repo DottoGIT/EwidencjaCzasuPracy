@@ -1,11 +1,14 @@
 <resources>
     <string name="app_name">EwidencjaCzasuPracy</string>
-    <string name="button_login">Zaloguj</string>
     <string name="hint_email">email</string>
     <string name="hint_password">hasło</string>
-    <string name="hint_password_again">powtórz hasło</string>
-    <string name="button_register">Zarejestruj się</string>
     <string name="hint_name">Imię</string>
+    <string name="hint_password_again">powtórz hasło</string>
     <string name="hint_surname">Nazwisko</string>
     <string name="text_login">Logowanie</string>
+    <string name="text_register">Rejestracja</string>
+    <string name="button_switch_register">Zarejestruj się</string>
+    <string name="button_switch_login">Zaloguj się</string>
+    <string name="button_login">Zaloguj</string>
+    <string name="button_register">Zarejestruj</string>
 </resources>
