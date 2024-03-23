@@ -1,7 +1,7 @@
 package com.ewidencjaczasupracy
 
 class LoginTab {
-    fun login()
+    fun login(email: String, password: String)
     {
 
     }

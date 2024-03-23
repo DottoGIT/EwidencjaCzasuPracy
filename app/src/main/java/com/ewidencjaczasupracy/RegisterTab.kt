@@ -1,13 +1,7 @@
 package com.ewidencjaczasupracy
 
 class RegisterTab {
-    fun isFormCorrect()
-    {
-
-
-    }
-
-    fun registerUser()
+    fun registerUser(email: String, name: String, surname: String, password: String)
     {
 
     }
