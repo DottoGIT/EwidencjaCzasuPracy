@@ -17,8 +17,6 @@ private enum class FormMode{
 }
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var loginTab: LoginTab
-    private lateinit var registerTab: RegisterTab
     private var currentFormMode : FormMode = FormMode.Login
     // UI Variables
     private lateinit var mainText: TextView
@@ -45,22 +43,10 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        // Init UI
-        mainText = findViewById(R.id.mainText)
-        inEmail = findViewById(R.id.input_email)
-        inName = findViewById(R.id.input_name)
-        inSurname = findViewById(R.id.input_surname)
-        inPassword = findViewById(R.id.input_password)
-        inPasswordAgain = findViewById(R.id.input_password_again)
-        btnSwitch = findViewById(R.id.button_switch)
-        btnConfirm = findViewById(R.id.button_login)
 
-        btnSwitch.setOnClickListener{switchButtonClick()}
-        btnConfirm.setOnClickListener{confirmButtonClick()}
+        initializeUI()
+        assignButtons()
 
-        // Init variables
-        loginTab = LoginTab()
-        registerTab = RegisterTab()
     }
 
     private fun switchButtonClick()
@@ -70,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun confirmButtonClick()
     {
-        if(checkFormValidity() && checkDatabaseConnection())
+        if(checkFormValidity())
             confirmForm()
     }
 
@@ -87,14 +73,41 @@ class MainActivity : AppCompatActivity() {
 
     private fun confirmForm()
     {
-        if(currentFormMode == FormMode.Login)
-        {
-            val result = registerTab.registerUser(email, name, surname, password)
-        }
         if(currentFormMode == FormMode.Register)
-        {
-            val result = loginTab.login(email, password)
-        }
+            DatabaseController.registerUser(email, password, name, surname) { result ->
+                when(result)
+                {
+                    QueryResult.Success -> sendMonit("udalo sie")
+                    QueryResult.Failure -> sendMonit("Błąd połączenia z bazą danych")
+                }
+            }
+
+        else if(currentFormMode == FormMode.Login)
+            DatabaseController.loginUser(email, password) { result ->
+                when(result)
+                {
+                    QueryResult.Success -> sendMonit("udalo sie")
+                    QueryResult.Failure -> sendMonit("Błąd połączenia z bazą danych")
+                }
+            }
+    }
+
+    private fun initializeUI()
+    {
+        mainText = findViewById(R.id.mainText)
+        inEmail = findViewById(R.id.input_email)
+        inName = findViewById(R.id.input_name)
+        inSurname = findViewById(R.id.input_surname)
+        inPassword = findViewById(R.id.input_password)
+        inPasswordAgain = findViewById(R.id.input_password_again)
+        btnSwitch = findViewById(R.id.button_switch)
+        btnConfirm = findViewById(R.id.button_login)
+    }
+
+    private fun assignButtons()
+    {
+        btnSwitch.setOnClickListener{switchButtonClick()}
+        btnConfirm.setOnClickListener{confirmButtonClick()}
     }
 
     private fun gatherInput()
@@ -150,16 +163,6 @@ class MainActivity : AppCompatActivity() {
                 sendMonit(getString(R.string.invalid_password_again))
                 return false
             }
-        }
-        return true
-    }
-
-    private fun checkDatabaseConnection(): Boolean
-    {
-        if(!DatabaseController.isConnected())
-        {
-            sendMonit(getString(R.string.unable_to_connect_to_database))
-            return false
         }
         return true
     }
