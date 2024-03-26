@@ -1,5 +1,6 @@
 package com.ewidencjaczasupracy
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -43,23 +44,48 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         initializeUI()
         assignButtons()
 
     }
 
-    private fun switchButtonClick()
+    private fun confirmForm()
     {
-        switchView()
+        if(currentFormMode == FormMode.Login)
+        DatabaseController.loginUser(email, password) { result ->
+            when(result)
+            {
+                QueryResult.Success -> switchToUserActivity()
+                QueryResult.Failure -> sendMonit("Błąd połączenia z bazą danych")
+            }
+        }
+        else if(currentFormMode == FormMode.Register)
+            DatabaseController.registerUser(email, password, name, surname) { result ->
+                when(result)
+                {
+                    QueryResult.Success -> confirmAccountRegistration()
+                    QueryResult.Failure -> sendMonit("Błąd połączenia z bazą danych")
+                }
+            }
+
     }
 
-    private fun confirmButtonClick()
+    private fun switchToUserActivity()
     {
-        if(checkFormValidity())
-            confirmForm()
+        val intent = Intent(this, UserMainPage::class.java)
+        startActivity(intent)
     }
 
+    private fun confirmAccountRegistration()
+    {
+        DatabaseController.sendVerificationEmail(email) {result ->
+            when(result)
+            {
+                QueryResult.Success -> sendMonit("Emial weryfikacyjny wysłany")
+                QueryResult.Failure -> sendMonit("Nie wysłano maila")
+            }
+        }
+    }
 
     private fun switchView()
     {
@@ -71,30 +97,9 @@ class MainActivity : AppCompatActivity() {
         currentFormMode = if (currentFormMode == FormMode.Login) FormMode.Register else FormMode.Login
     }
 
-    private fun confirmForm()
-    {
-        if(currentFormMode == FormMode.Register)
-            DatabaseController.registerUser(email, password, name, surname) { result ->
-                when(result)
-                {
-                    QueryResult.Success -> sendMonit("udalo sie")
-                    QueryResult.Failure -> sendMonit("Błąd połączenia z bazą danych")
-                }
-            }
-
-        else if(currentFormMode == FormMode.Login)
-            DatabaseController.loginUser(email, password) { result ->
-                when(result)
-                {
-                    QueryResult.Success -> sendMonit("udalo sie")
-                    QueryResult.Failure -> sendMonit("Błąd połączenia z bazą danych")
-                }
-            }
-    }
-
     private fun initializeUI()
     {
-        mainText = findViewById(R.id.mainText)
+        mainText = findViewById(R.id.main_text)
         inEmail = findViewById(R.id.input_email)
         inName = findViewById(R.id.input_name)
         inSurname = findViewById(R.id.input_surname)
@@ -102,6 +107,17 @@ class MainActivity : AppCompatActivity() {
         inPasswordAgain = findViewById(R.id.input_password_again)
         btnSwitch = findViewById(R.id.button_switch)
         btnConfirm = findViewById(R.id.button_login)
+    }
+
+    private fun switchButtonClick()
+    {
+        switchView()
+    }
+
+    private fun confirmButtonClick()
+    {
+        if(checkFormValidity())
+            confirmForm()
     }
 
     private fun assignButtons()
@@ -175,7 +191,7 @@ class MainActivity : AppCompatActivity() {
     {
         mainText.text = getString(R.string.text_login)
         btnConfirm.text = getString(R.string.button_login)
-        btnSwitch.text = getString(R.string.button_switch_register)
+        btnSwitch.text = getString(R.string.text_register)
         inEmail.visibility = View.VISIBLE
         inName.visibility = View.GONE
         inSurname.visibility = View.GONE
@@ -187,7 +203,7 @@ class MainActivity : AppCompatActivity() {
     {
         mainText.text = getString(R.string.text_register)
         btnConfirm.text = getString(R.string.button_register)
-        btnSwitch.text = getString(R.string.button_switch_login)
+        btnSwitch.text = getString(R.string.text_login)
         inEmail.visibility = View.VISIBLE
         inName.visibility = View.VISIBLE
         inSurname.visibility = View.VISIBLE

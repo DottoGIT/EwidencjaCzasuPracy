@@ -18,4 +18,6 @@
     <string name="invalid_password">Niepoprawne hasło</string>
     <string name="invalid_password_again">Niepasujące ponowienie hasła</string>
     <string name="unable_to_connect_to_database">Nie udało się połączyć z bazą danych</string>
+    <string name="empty_value">...</string>
+    <string name="greeting">Witaj</string>
 </resources>

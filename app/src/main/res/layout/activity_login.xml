@@ -12,24 +12,24 @@
         android:id="@+id/button_switch"
         android:layout_width="200dp"
         android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginTop="@dimen/border_margin"
+        android:layout_marginEnd="@dimen/border_margin"
         android:backgroundTint="@color/primary_orange"
         android:gravity="center"
         android:text="@string/button_register"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="@dimen/buttonText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/mainText"
+        android:id="@+id/main_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="@dimen/border_margin_big"
         android:text="@string/text_login"
         android:textColor="@color/white"
-        android:textSize="40sp"
+        android:textSize="@dimen/h2"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="@+id/linearLayout" />
@@ -56,7 +56,7 @@
             android:inputType="textEmailAddress"
             android:textColor="@color/white"
             android:textColorHint="@color/light_gray"
-            android:textSize="20sp" />
+            android:textSize="@dimen/editText" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,7 +74,7 @@
                 android:inputType="text"
                 android:textColor="@color/white"
                 android:textColorHint="@color/light_gray"
-                android:textSize="20sp"
+                android:textSize="@dimen/editText"
                 android:visibility="gone" />
 
             <EditText
@@ -88,7 +88,7 @@
                 android:inputType="text"
                 android:textColor="@color/white"
                 android:textColorHint="@color/light_gray"
-                android:textSize="20sp"
+                android:textSize="@dimen/editText"
                 android:visibility="gone" />
         </LinearLayout>
 
@@ -102,7 +102,7 @@
             android:inputType="textPassword"
             android:textColor="@color/white"
             android:textColorHint="@color/light_gray"
-            android:textSize="20sp" />
+            android:textSize="@dimen/editText" />
 
         <EditText
             android:id="@+id/input_password_again"
@@ -114,7 +114,7 @@
             android:inputType="textPassword"
             android:textColor="@color/white"
             android:textColorHint="@color/light_gray"
-            android:textSize="20sp"
+            android:textSize="@dimen/editText"
             android:visibility="gone" />
 
     </LinearLayout>
@@ -123,11 +123,11 @@
         android:id="@+id/button_login"
         android:layout_width="200dp"
         android:layout_height="60dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="@dimen/border_margin_big"
         android:backgroundTint="@color/primary_orange"
         android:text="@string/button_login"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="@dimen/buttonText"
         app:layout_constraintEnd_toEndOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="@+id/linearLayout"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
