@@ -18,6 +18,11 @@
     <string name="invalid_password">Niepoprawne hasło</string>
     <string name="invalid_password_again">Niepasujące ponowienie hasła</string>
     <string name="unable_to_connect_to_database">Nie udało się połączyć z bazą danych</string>
+    <string name="text_email_verification">Weryfikacja konta</string>
+    <string name="text_email_verification_under_02">Wiadomość do weryfikacji konta wysłana na mail</string>
+    <string name="text_email_verification_under_03">Nie zapomnij sprawdzić SPAM\'u</string>
     <string name="empty_value">...</string>
     <string name="greeting">Witaj</string>
+    <string name="button_resend_verification">Wyślij ponownie</string>
+    <string name="button_back">Wróć</string>
 </resources>

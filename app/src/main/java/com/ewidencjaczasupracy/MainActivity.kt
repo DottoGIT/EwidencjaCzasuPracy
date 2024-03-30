@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseUser
 
 private enum class FormMode{
     Login,
@@ -55,8 +56,8 @@ class MainActivity : AppCompatActivity() {
         DatabaseController.loginUser(email, password) { result ->
             when(result)
             {
-                QueryResult.Success -> switchToUserActivity()
-                QueryResult.Failure -> sendMonit("Błąd połączenia z bazą danych")
+                QueryResult.Success -> confirmLoggingAttempt()
+                QueryResult.Failure -> sendMonit("Błąd podczas logowania, sprawdź dane oraz połączenie internetowe")
             }
         }
         else if(currentFormMode == FormMode.Register)
@@ -64,27 +65,41 @@ class MainActivity : AppCompatActivity() {
                 when(result)
                 {
                     QueryResult.Success -> confirmAccountRegistration()
-                    QueryResult.Failure -> sendMonit("Błąd połączenia z bazą danych")
+                    QueryResult.Failure -> sendMonit("Błąd podczas rejestracji, sprawdź dane oraz połączenie internetowe")
                 }
             }
-
     }
 
-    private fun switchToUserActivity()
+    private fun confirmLoggingAttempt()
     {
-        val intent = Intent(this, UserMainPage::class.java)
-        startActivity(intent)
+        val user = DatabaseController.getCurrentUser()
+        if(user == null)
+        {
+            sendMonit("Błąd podczas logowania, sprawdź dane oraz połączenie internetowe")
+            return
+        }
+        else if(user.isEmailVerified)
+        {
+            val intent = Intent(this, UserMainPage::class.java)
+            startActivity(intent)
+        }
+        else
+        {
+            val intent = Intent(this, EmailVerification::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun confirmAccountRegistration()
     {
-        DatabaseController.sendVerificationEmail(email) {result ->
-            when(result)
-            {
-                QueryResult.Success -> sendMonit("Emial weryfikacyjny wysłany")
-                QueryResult.Failure -> sendMonit("Nie wysłano maila")
-            }
+        val user = DatabaseController.getCurrentUser()
+        if(user == null)
+        {
+            sendMonit("null user")
+            return
         }
+        val intent = Intent(this, EmailVerification::class.java)
+        startActivity(intent)
     }
 
     private fun switchView()

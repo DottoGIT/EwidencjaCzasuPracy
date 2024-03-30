@@ -1,13 +1,16 @@
 package com.ewidencjaczasupracy
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseUser
 
 class UserMainPage : AppCompatActivity() {
+    lateinit var user : FirebaseUser
     private lateinit var helloText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,6 +22,11 @@ class UserMainPage : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        if (DatabaseController.getCurrentUser() == null)
+        {
+            logout()
+        }
+        user = DatabaseController.getCurrentUser()!!
 
         initializeUI()
         UpdateUserName()
@@ -27,12 +35,18 @@ class UserMainPage : AppCompatActivity() {
     private fun UpdateUserName()
     {
         val user = DatabaseController.getCurrentUser()
-        val greeting = getString(R.string.greeting) + (user?.email ?: "NULL")
+        val greeting = getString(R.string.greeting) + user?.displayName
         helloText.text = greeting
     }
 
     private fun initializeUI()
     {
         helloText = findViewById(R.id.hello_text)
+    }
+    private fun logout()
+    {
+        val intent = Intent(this, MainActivity::class.java)
+        DatabaseController.signOut()
+        startActivity(intent)
     }
 }

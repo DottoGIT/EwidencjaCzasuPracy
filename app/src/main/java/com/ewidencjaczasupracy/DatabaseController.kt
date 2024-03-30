@@ -11,57 +11,43 @@ enum class QueryResult
     Success,
     Failure
 }
-class DatabaseController {
-    companion object{
-        private var auth: FirebaseAuth = Firebase.auth
-        init {
+object DatabaseController {
+    private var auth: FirebaseAuth = Firebase.auth
+    fun sendVerificationEmail(user: FirebaseUser, callback: (QueryResult) -> Unit)
+    {
+        lateinit var result: QueryResult
+        user.sendEmailVerification().addOnCompleteListener { task ->
+            result = if( task.isSuccessful ) QueryResult.Success else QueryResult.Failure
+            callback(result)
         }
+    }
 
-        fun sendVerificationEmail(email: String, callback: (QueryResult) -> Unit)
-        {
-            lateinit var result: QueryResult
-            val actionCodeSettings = actionCodeSettings {
-                url = "https://www.example.com/finishSignUp?cartId=1234"
-                handleCodeInApp = true
-                setIOSBundleId("com.example.ios")
-                setAndroidPackageName(
-                    "com.ewidencjaczasupracy",
-                    true,
-                    "31",
-                )
+    fun registerUser(email: String, password: String, name: String, surname: String, callback: (QueryResult) -> Unit) {
+        lateinit var result: QueryResult
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                result = if (task.isSuccessful) QueryResult.Success else QueryResult.Failure
+                callback(result)
             }
 
-            Firebase.auth.sendSignInLinkToEmail(email, actionCodeSettings)
-                .addOnCompleteListener { task ->
-                    result = if (task.isSuccessful) QueryResult.Success else QueryResult.Failure
-                    callback(result)
-                }
-        }
+    }
+    fun loginUser(email: String, password: String, callback: (QueryResult) -> Unit)
+    {
+        lateinit var result: QueryResult
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener {task ->
+                result = if (task.isSuccessful) QueryResult.Success else QueryResult.Failure
+                callback(result)
+            }
+    }
 
-        fun registerUser(email: String, password: String, name: String, surname: String, callback: (QueryResult) -> Unit)
-        {
-            lateinit var result: QueryResult
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener {task ->
-                    result = if (task.isSuccessful) QueryResult.Success else QueryResult.Failure
-                    callback(result)
-                }
+    fun getCurrentUser(): FirebaseUser?
+    {
+        return auth.currentUser
+    }
 
-        }
-
-        fun loginUser(email: String, password: String, callback: (QueryResult) -> Unit)
-        {
-            lateinit var result: QueryResult
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener {task ->
-                    result = if (task.isSuccessful) QueryResult.Success else QueryResult.Failure
-                    callback(result)
-                }
-        }
-
-        fun getCurrentUser(): FirebaseUser?
-        {
-            return auth.currentUser
-        }
+    fun signOut()
+    {
+        auth.signOut()
     }
 }
