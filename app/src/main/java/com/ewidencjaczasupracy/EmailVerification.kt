@@ -68,10 +68,11 @@ class EmailVerification : AppCompatActivity() {
 
     private fun resendVerification(){
         DatabaseController.sendVerificationEmail(user){ result ->
-            when(result)
-            {
-                QueryResult.Success -> sendMonit("Email weryfikacyjny wysłany")
-                QueryResult.Failure -> sendMonit("Nie udało się wysłać maila")
+            if(result.isSuccessful) {
+                sendMonit(getString(R.string.monit_email_sent))
+            }
+            else{
+                sendMonit(DatabaseController.GetErrorMessage(this, result))
             }
         }
     }

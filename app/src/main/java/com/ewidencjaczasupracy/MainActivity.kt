@@ -11,7 +11,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.firebase.auth.FirebaseUser
 
 private enum class FormMode{
     Login,
@@ -52,22 +51,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun confirmForm()
     {
-        if(currentFormMode == FormMode.Login)
-        DatabaseController.loginUser(email, password) { result ->
-            when(result)
-            {
-                QueryResult.Success -> confirmLoggingAttempt()
-                QueryResult.Failure -> sendMonit("Błąd podczas logowania, sprawdź dane oraz połączenie internetowe")
-            }
-        }
-        else if(currentFormMode == FormMode.Register)
-            DatabaseController.registerUser(email, password, name, surname) { result ->
-                when(result)
-                {
-                    QueryResult.Success -> confirmAccountRegistration()
-                    QueryResult.Failure -> sendMonit("Błąd podczas rejestracji, sprawdź dane oraz połączenie internetowe")
+        if(currentFormMode == FormMode.Login) {
+            DatabaseController.loginUser(email, password) { result ->
+                if (result.isSuccessful) {
+                    confirmLoggingAttempt()
+                } else {
+                    sendMonit(DatabaseController.GetErrorMessage(this, result))
                 }
             }
+        }
+        else if(currentFormMode == FormMode.Register) {
+            DatabaseController.registerUser(email, password, name, surname) { result ->
+                if (result != null && result.isSuccessful) {
+                    confirmAccountRegistration()
+                } else {
+                    sendMonit(DatabaseController.GetErrorMessage(this, result))
+                }
+            }
+        }
     }
 
     private fun confirmLoggingAttempt()
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         val user = DatabaseController.getCurrentUser()
         if(user == null)
         {
-            sendMonit("Błąd podczas logowania, sprawdź dane oraz połączenie internetowe")
+            sendMonit(getString(R.string.error_unknown))
             return
         }
         else if(user.isEmailVerified)
@@ -92,12 +93,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun confirmAccountRegistration()
     {
-        val user = DatabaseController.getCurrentUser()
-        if(user == null)
-        {
-            sendMonit("null user")
-            return
-        }
         val intent = Intent(this, EmailVerification::class.java)
         startActivity(intent)
     }
@@ -158,12 +153,12 @@ class MainActivity : AppCompatActivity() {
         {
             if(!DataVerifier.isEmailValid(email))
             {
-                sendMonit(getString(R.string.invalid_email))
+                sendMonit(getString(R.string.error_invalid_email))
                 return false
             }
             if(!DataVerifier.isPasswordValid(password))
             {
-                sendMonit(getString(R.string.invalid_password))
+                sendMonit(getString(R.string.error_invalid_password))
                 return false
             }
         }
@@ -171,27 +166,27 @@ class MainActivity : AppCompatActivity() {
         {
             if(!DataVerifier.isEmailValid(email))
             {
-                sendMonit(getString(R.string.invalid_email))
+                sendMonit(getString(R.string.error_invalid_email))
                 return false
             }
             if(!DataVerifier.isNameValid(name))
             {
-                sendMonit(getString(R.string.invalid_name))
+                sendMonit(getString(R.string.error_invalid_name))
                 return false
             }
             if(!DataVerifier.isSurnameValid(surname))
             {
-                sendMonit(getString(R.string.invalid_surname))
+                sendMonit(getString(R.string.error_invalid_surname))
                 return false
             }
             if(!DataVerifier.isPasswordValid(password))
             {
-                sendMonit(getString(R.string.invalid_password))
+                sendMonit(getString(R.string.error_invalid_password))
                 return false
             }
             if(!DataVerifier.isPasswordAgainValid(password, passwordAgain))
             {
-                sendMonit(getString(R.string.invalid_password_again))
+                sendMonit(getString(R.string.error_invalid_password_again))
                 return false
             }
         }

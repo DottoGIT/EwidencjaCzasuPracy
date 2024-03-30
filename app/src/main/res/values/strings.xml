@@ -11,13 +11,6 @@
     <string name="button_switch_login">Zaloguj się</string>
     <string name="button_login">Zaloguj</string>
     <string name="button_register">Zarejestruj</string>
-    <string name="invalid_form_data">Niepoprane dane formularza</string>
-    <string name="invalid_email">Niepoprawny email</string>
-    <string name="invalid_name">Niepoprawne imie</string>
-    <string name="invalid_surname">Niepoprawne nazwisko</string>
-    <string name="invalid_password">Niepoprawne hasło</string>
-    <string name="invalid_password_again">Niepasujące ponowienie hasła</string>
-    <string name="unable_to_connect_to_database">Nie udało się połączyć z bazą danych</string>
     <string name="text_email_verification">Weryfikacja konta</string>
     <string name="text_email_verification_under_02">Wiadomość do weryfikacji konta wysłana na mail</string>
     <string name="text_email_verification_under_03">Nie zapomnij sprawdzić SPAM\'u</string>
@@ -25,4 +18,20 @@
     <string name="greeting">Witaj</string>
     <string name="button_resend_verification">Wyślij ponownie</string>
     <string name="button_back">Wróć</string>
+    <!--> Code Monits <-->
+    <string name="monit_correct">Operacja udana</string>
+    <string name="monit_email_sent">Wysłano mail weryfikacyjny</string>
+    <!--> Code Errrors <-->
+    <string name="error_no_connection">Nie udało się połączyć z bazą danych</string>
+    <string name="error_user_not_found">Błędne dane logowania</string>
+    <string name="error_email_not_sent">Email nie został wysłany</string>
+    <string name="error_invalid_password_again">Niepasujące ponowienie hasła</string>
+    <string name="error_invalid_email">Niepoprawny email</string>
+    <string name="error_invalid_name">Niepoprawne imie</string>>
+    <string name="error_invalid_form_data">Niepoprane dane formularza</string>
+    <string name="error_invalid_surname">Niepoprawne nazwisko</string>
+    <string name="error_invalid_password">Niepoprawne hasło</string>
+    <string name="error_weak_password">podane hasło jest zbyt proste</string>
+    <string name="error_unknown">Operacja nie udała się</string>
+
 </resources>
