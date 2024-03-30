@@ -55,7 +55,7 @@ class EmailVerification : AppCompatActivity() {
 
     private fun setTexts()
     {
-        val greeting = getString(R.string.greeting) + user.displayName
+        val greeting = getString(R.string.greeting) + " " + user.displayName!!.split(" ")[0] + "."
         txtHello.text = greeting
         val email = user.email
         txtEmail.text = email

@@ -34,8 +34,7 @@ class UserMainPage : AppCompatActivity() {
 
     private fun UpdateUserName()
     {
-        val user = DatabaseController.getCurrentUser()
-        val greeting = getString(R.string.greeting) + user?.displayName
+        val greeting = getString(R.string.greeting) + " " + user.displayName!!.split(" ")[0] + "."
         helloText.text = greeting
     }
 

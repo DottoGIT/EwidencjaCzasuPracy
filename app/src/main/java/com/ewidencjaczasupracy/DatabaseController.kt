@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.actionCodeSettings
 import com.google.firebase.auth.auth
+import com.google.firebase.auth.userProfileChangeRequest
 
 enum class QueryResult
 {
@@ -21,15 +22,19 @@ object DatabaseController {
             callback(result)
         }
     }
-
     fun registerUser(email: String, password: String, name: String, surname: String, callback: (QueryResult) -> Unit) {
-        lateinit var result: QueryResult
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                result = if (task.isSuccessful) QueryResult.Success else QueryResult.Failure
-                callback(result)
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if(task.isSuccessful)
+            {
+                updateUsername(name, surname){result ->
+                    callback(result)
+                }
             }
-
+            else
+            {
+                callback(QueryResult.Failure)
+            }
+        }
     }
     fun loginUser(email: String, password: String, callback: (QueryResult) -> Unit)
     {
@@ -40,14 +45,25 @@ object DatabaseController {
                 callback(result)
             }
     }
-
     fun getCurrentUser(): FirebaseUser?
     {
         return auth.currentUser
     }
-
     fun signOut()
     {
         auth.signOut()
+    }
+
+    private fun updateUsername(name: String, surname: String, callback: (QueryResult) -> Unit)
+    {
+        val user = getCurrentUser()
+        var result : QueryResult;
+        val profileUpdates = userProfileChangeRequest {
+            displayName = "$name $surname"
+        }
+        user!!.updateProfile(profileUpdates).addOnCompleteListener { task ->
+                result = if(task.isSuccessful) QueryResult.Success else QueryResult.Failure
+                callback(result)
+        }
     }
 }
