@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         }
         initializeUI()
         assignButtons()
-
     }
 
     private fun confirmForm()
@@ -56,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                 if (result.isSuccessful) {
                     confirmLoggingAttempt()
                 } else {
-                    sendMonit(DatabaseController.GetErrorMessage(this, result))
+                    sendMonit(DatabaseController.getErrorMessage(this, result))
                 }
             }
         }
@@ -65,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                 if (result != null && result.isSuccessful) {
                     confirmAccountRegistration()
                 } else {
-                    sendMonit(DatabaseController.GetErrorMessage(this, result))
+                    sendMonit(DatabaseController.getErrorMessage(this, result))
                 }
             }
         }
@@ -81,8 +80,20 @@ class MainActivity : AppCompatActivity() {
         }
         else if(user.isEmailVerified)
         {
-            val intent = Intent(this, UserMainPage::class.java)
-            startActivity(intent)
+            DatabaseController.GetUserAccountType { result ->
+                val intent = when (result) {
+                    Constants.ADMIN_TYPE -> {
+                        Intent(this, AdminMainPage::class.java)
+                    }
+                    Constants.WORKER_TYPE -> {
+                        Intent(this, WorkerMainPage::class.java)
+                    }
+                    else -> {
+                        Intent(this, UserConfigureInit::class.java)
+                    }
+                }
+                startActivity(intent)
+            }
         }
         else
         {

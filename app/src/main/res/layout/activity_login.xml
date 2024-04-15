@@ -48,8 +48,8 @@
 
         <EditText
             android:id="@+id/input_email"
-            android:layout_width="350dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/EditTextWidth"
+            android:layout_height="@dimen/EditTextHeight"
             android:autofillHints="emailAddress"
             android:ems="10"
             android:hint="@string/hint_email"
@@ -94,8 +94,8 @@
 
         <EditText
             android:id="@+id/input_password"
-            android:layout_width="350dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/EditTextWidth"
+            android:layout_height="@dimen/EditTextHeight"
             android:autofillHints="Password"
             android:ems="10"
             android:hint="@string/hint_password"

@@ -1,5 +1,12 @@
 <resources>
+    <!--> App Info <-->
     <string name="app_name">EwidencjaCzasuPracy</string>
+    <!--> Miscellaneous <-->
+    <string name="empty_value">...</string>
+    <string name="greeting">Witaj</string>
+    <string name="proceed">Dalej</string>
+
+    <!--> Login Activity <-->
     <string name="hint_email">email</string>
     <string name="hint_password">hasło</string>
     <string name="hint_name">Imię</string>
@@ -11,13 +18,22 @@
     <string name="button_switch_login">Zaloguj się</string>
     <string name="button_login">Zaloguj</string>
     <string name="button_register">Zarejestruj</string>
+    <!--> Email Verification Activity <-->
     <string name="text_email_verification">Weryfikacja konta</string>
     <string name="text_email_verification_under_02">Wiadomość do weryfikacji konta wysłana na mail</string>
     <string name="text_email_verification_under_03">Nie zapomnij sprawdzić SPAM\'u</string>
-    <string name="empty_value">...</string>
-    <string name="greeting">Witaj</string>
     <string name="button_resend_verification">Wyślij ponownie</string>
     <string name="button_back">Wróć</string>
+    <!--> User Activities <-->
+    <string name="join_company">Dołącz do firmy</string>
+    <string name="create_company">Stwórz firmę</string>
+    <string name="enter_company_code">Wprowadź kod firmy</string>
+    <string name="company_code_info">Kod firmy otrzymuje osoba która założyła firmę, aby dołączyć do firmy wprowadź jej kod który otrzymasz od pracodawcy.</string>
+    <string name="send_company_code_info">Ten kod jest wymagany od twoich pracowników aby dołączyć do twojej firmy. Roześlij go wybranym pracownikom </string>
+    <string name="comapny_succeed">Udało ci się założyć firmę!</string>
+    <string name="your_company_code_is">Twój kod to</string>
+    <!--> Code Constants <-->
+    <string name="UserAccountType">UserAccountType</string>>
     <!--> Code Monits <-->
     <string name="monit_correct">Operacja udana</string>
     <string name="monit_email_sent">Wysłano mail weryfikacyjny</string>
@@ -33,5 +49,4 @@
     <string name="error_invalid_password">Niepoprawne hasło</string>
     <string name="error_weak_password">podane hasło jest zbyt proste</string>
     <string name="error_unknown">Operacja nie udała się</string>
-
 </resources>

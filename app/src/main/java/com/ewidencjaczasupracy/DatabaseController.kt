@@ -35,10 +35,6 @@ object DatabaseController {
                 callback(task)
             }
     }
-    fun getCurrentUser(): FirebaseUser?
-    {
-        return auth.currentUser
-    }
     fun signOut()
     {
         auth.signOut()
@@ -59,7 +55,26 @@ object DatabaseController {
                 callback(task)
         }
     }
-    fun <T> GetErrorMessage(context : Context, task : Task<T>?) : String
+    fun getCurrentUser(): FirebaseUser?
+    {
+        return auth.currentUser
+    }
+    fun GetUserAccountType(callback: (String?) -> Unit)
+    {
+        val user = getCurrentUser()
+        if(user == null)
+        {
+            callback(Constants.UNDEFINED_TYPE)
+        }
+        user!!.getIdToken(true).addOnCompleteListener { task ->
+            if(task.isSuccessful){
+                val claims = task.result?.claims;
+                val accountType = claims?.get(Constants.USER_ACCOUNT) as? String
+                callback(accountType);
+            }
+        }
+    }
+    fun <T> getErrorMessage(context : Context, task : Task<T>?) : String
     {
         if(task == null)
             return context.getString(R.string.error_unknown)

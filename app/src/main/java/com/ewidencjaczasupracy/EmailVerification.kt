@@ -40,19 +40,16 @@ class EmailVerification : AppCompatActivity() {
 
         resendVerification()
     }
-
     private fun initializeUI() {
         txtHello = findViewById(R.id.textView_greeting)
         txtEmail = findViewById(R.id.textView_email)
         btnBack = findViewById(R.id.button_back)
         btnResend = findViewById(R.id.button_resend)
     }
-
     private fun assignButtons() {
         btnBack.setOnClickListener{backToLogin()}
         btnResend.setOnClickListener{resendVerification()}
     }
-
     private fun setTexts()
     {
         val greeting = getString(R.string.greeting) + " " + user.displayName!!.split(" ")[0] + "."
@@ -60,26 +57,22 @@ class EmailVerification : AppCompatActivity() {
         val email = user.email
         txtEmail.text = email
     }
-
     private fun backToLogin() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
-
     private fun resendVerification(){
         DatabaseController.sendVerificationEmail(user){ result ->
             if(result.isSuccessful) {
                 sendMonit(getString(R.string.monit_email_sent))
             }
             else{
-                sendMonit(DatabaseController.GetErrorMessage(this, result))
+                sendMonit(DatabaseController.getErrorMessage(this, result))
             }
         }
     }
-
     private fun sendMonit(text: String)
     {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
-
 }

@@ -13,6 +13,21 @@
         android:theme="@style/Theme.EwidencjaCzasuPracy"
         tools:targetApi="31">
         <activity
+            android:name=".UserConfigureGetCompanyCode"
+            android:exported="false" />
+        <activity
+            android:name=".UserConfigureInputCompanyCode"
+            android:exported="false" />
+        <activity
+            android:name=".WorkerMainPage"
+            android:exported="false" />
+        <activity
+            android:name=".AdminMainPage"
+            android:exported="false" />
+        <activity
+            android:name=".UserConfigureInit"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -21,7 +36,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserMainPage" />
         <activity android:name=".EmailVerification" />
     </application>
 
