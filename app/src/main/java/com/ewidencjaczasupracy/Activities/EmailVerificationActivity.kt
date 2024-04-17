@@ -1,4 +1,4 @@
-package com.ewidencjaczasupracy
+package com.ewidencjaczasupracy.Activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,10 +9,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ewidencjaczasupracy.Firebase.AuthenticationController
+import com.ewidencjaczasupracy.Firebase.DatabaseController
+import com.ewidencjaczasupracy.Firebase.DatabaseErrorHandling
+import com.ewidencjaczasupracy.Firebase.EmailVerificationHandler
+import com.ewidencjaczasupracy.R
 import com.google.firebase.auth.FirebaseUser
 
-class EmailVerification : AppCompatActivity() {
-    private lateinit var user : FirebaseUser
+class EmailVerificationActivity : AppCompatActivity() {
     private lateinit var txtHello : TextView
     private lateinit var txtEmail : TextView
     private lateinit var btnBack : Button
@@ -28,16 +32,9 @@ class EmailVerification : AppCompatActivity() {
             insets
 
         }
-        if (DatabaseController.getCurrentUser() == null)
-        {
-            backToLogin()
-        }
-        user = DatabaseController.getCurrentUser()!!
-
         initializeUI()
         assignButtons()
         setTexts()
-
         resendVerification()
     }
     private fun initializeUI() {
@@ -52,27 +49,24 @@ class EmailVerification : AppCompatActivity() {
     }
     private fun setTexts()
     {
-        val greeting = getString(R.string.greeting) + " " + user.displayName!!.split(" ")[0] + "."
+        val greeting = getString(R.string.greeting) + " " + DatabaseController.getCurrentUserName()
         txtHello.text = greeting
-        val email = user.email
+        val email = DatabaseController.getCurrentUserEmail()
         txtEmail.text = email
     }
     private fun backToLogin() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }
     private fun resendVerification(){
-        DatabaseController.sendVerificationEmail(user){ result ->
-            if(result.isSuccessful) {
-                sendMonit(getString(R.string.monit_email_sent))
-            }
-            else{
-                sendMonit(DatabaseController.getErrorMessage(this, result))
+        EmailVerificationHandler.sendVerificationEmail(DatabaseController.getCurrentUser()) { result ->
+            if (result.isSuccessful) {
+                val text = getString(R.string.monit_email_sent)
+                Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+            } else {
+                val text = DatabaseErrorHandling.getErrorMessage(this, result)
+                Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
             }
         }
-    }
-    private fun sendMonit(text: String)
-    {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 }

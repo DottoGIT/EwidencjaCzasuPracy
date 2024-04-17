@@ -1,4 +1,4 @@
-package com.ewidencjaczasupracy
+package com.ewidencjaczasupracy.Activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,9 +8,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.firebase.auth.FirebaseUser
+import com.ewidencjaczasupracy.Firebase.AuthenticationController
+import com.ewidencjaczasupracy.Firebase.DatabaseController
+import com.ewidencjaczasupracy.R
 
-class UserConfigureInit : AppCompatActivity() {
+class UserConfigureInitActivity : AppCompatActivity() {
+
     private lateinit var helloText: TextView
     private lateinit var createCompanyBtn : Button
     private lateinit var joinCompanyBtn : Button
@@ -24,15 +27,13 @@ class UserConfigureInit : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         initializeUI()
         assignButtons()
-        UpdateUserName()
+        updateUserName()
     }
-
-    private fun UpdateUserName()
+    private fun updateUserName()
     {
-        val greeting = getString(R.string.greeting) + " " + DatabaseController.getCurrentUser()!!.displayName!!.split(" ")[0] + "."
+        val greeting = getString(R.string.greeting) + " " + DatabaseController.getCurrentUserName()
         helloText.text = greeting
     }
     private fun initializeUI()
@@ -41,20 +42,16 @@ class UserConfigureInit : AppCompatActivity() {
         createCompanyBtn = findViewById(R.id.button_create_company)
         joinCompanyBtn = findViewById(R.id.button_join_company)
     }
-
     private fun createButtonClick()
     {
-        val intent = Intent(this, UserConfigureGetCompanyCode::class.java)
+        val intent = Intent(this, UserConfigureGetCompanyCodeActivity::class.java)
         startActivity(intent)
     }
-
     private fun joinButtonClick()
     {
-        val intent = Intent(this, UserConfigureInputCompanyCode::class.java)
+        val intent = Intent(this, UserConfigureInputCompanyCodeActivity::class.java)
         startActivity(intent)
     }
-
-
     private fun assignButtons()
     {
         createCompanyBtn.setOnClickListener{createButtonClick()}

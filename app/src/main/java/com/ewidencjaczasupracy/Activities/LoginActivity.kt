@@ -1,4 +1,4 @@
-package com.ewidencjaczasupracy
+package com.ewidencjaczasupracy.Activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,13 +11,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ewidencjaczasupracy.Firebase.AuthenticationController
+import com.ewidencjaczasupracy.Constants
+import com.ewidencjaczasupracy.Firebase.DAOs.UserAccountType
+import com.ewidencjaczasupracy.Firebase.DatabaseController
+import com.ewidencjaczasupracy.Firebase.DatabaseErrorHandling
+import com.ewidencjaczasupracy.Utils.DataVerifier
+import com.ewidencjaczasupracy.R
 
 private enum class FormMode{
     Login,
     Register
 }
-
-class MainActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
     private var currentFormMode : FormMode = FormMode.Login
     // UI Variables
     private lateinit var mainText: TextView
@@ -44,6 +50,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         initializeUI()
         assignButtons()
     }
@@ -51,20 +58,23 @@ class MainActivity : AppCompatActivity() {
     private fun confirmForm()
     {
         if(currentFormMode == FormMode.Login) {
-            DatabaseController.loginUser(email, password) { result ->
+            AuthenticationController.loginUser(email, password) { result ->
                 if (result.isSuccessful) {
                     confirmLoggingAttempt()
                 } else {
-                    sendMonit(DatabaseController.getErrorMessage(this, result))
+                    val message = DatabaseErrorHandling.getErrorMessage(this, result)
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
         else if(currentFormMode == FormMode.Register) {
-            DatabaseController.registerUser(email, password, name, surname) { result ->
-                if (result != null && result.isSuccessful) {
-                    confirmAccountRegistration()
+            AuthenticationController.registerUser(email, password, name, surname) { result ->
+                if (result.isSuccessful) {
+                    val intent = Intent(this, EmailVerificationActivity::class.java)
+                    startActivity(intent)
                 } else {
-                    sendMonit(DatabaseController.getErrorMessage(this, result))
+                    val message = DatabaseErrorHandling.getErrorMessage(this, result)
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -73,38 +83,23 @@ class MainActivity : AppCompatActivity() {
     private fun confirmLoggingAttempt()
     {
         val user = DatabaseController.getCurrentUser()
-        if(user == null)
+        if(!user.isEmailVerified)
         {
-            sendMonit(getString(R.string.error_unknown))
-            return
-        }
-        else if(user.isEmailVerified)
-        {
-            DatabaseController.GetUserAccountType { result ->
-                val intent = when (result) {
-                    Constants.ADMIN_TYPE -> {
-                        Intent(this, AdminMainPage::class.java)
-                    }
-                    Constants.WORKER_TYPE -> {
-                        Intent(this, WorkerMainPage::class.java)
-                    }
-                    else -> {
-                        Intent(this, UserConfigureInit::class.java)
-                    }
-                }
-                startActivity(intent)
-            }
-        }
-        else
-        {
-            val intent = Intent(this, EmailVerification::class.java)
+            val intent = Intent(this, EmailVerificationActivity::class.java)
             startActivity(intent)
         }
-    }
 
-    private fun confirmAccountRegistration()
-    {
-        val intent = Intent(this, EmailVerification::class.java)
+        val intent = when ( DatabaseController.getCurrentUserAccountType() ) {
+            UserAccountType.Boss -> {
+                Intent(this, BossMainActivity::class.java)
+            }
+            UserAccountType.Worker -> {
+                Intent(this, WorkerMainActivity::class.java)
+            }
+            else -> {
+                Intent(this, UserConfigureInitActivity::class.java)
+            }
+        }
         startActivity(intent)
     }
 
@@ -116,6 +111,85 @@ class MainActivity : AppCompatActivity() {
             switchToLoginMode()
 
         currentFormMode = if (currentFormMode == FormMode.Login) FormMode.Register else FormMode.Login
+    }
+
+
+    private fun checkFormValidity(): Boolean
+    {
+        gatherInput()
+        if (currentFormMode == FormMode.Login)
+        {
+            if(!DataVerifier.isEmailValid(email))
+            {
+                val message = getString(R.string.error_invalid_email)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                return false
+            }
+            if(!DataVerifier.isPasswordValid(password))
+            {
+                val message = getString(R.string.error_invalid_password)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                return false
+            }
+        }
+        else if(currentFormMode == FormMode.Register)
+        {
+            if(!DataVerifier.isEmailValid(email))
+            {
+                val message = getString(R.string.error_invalid_email)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                return false
+            }
+            if(!DataVerifier.isNameValid(name))
+            {
+                val message = getString(R.string.error_invalid_name)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                return false
+            }
+            if(!DataVerifier.isSurnameValid(surname))
+            {
+                val message = getString(R.string.error_invalid_surname)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                return false
+            }
+            if(!DataVerifier.isPasswordValid(password))
+            {
+                val message = getString(R.string.error_invalid_password)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                return false
+            }
+            if(!DataVerifier.isPasswordAgainValid(password, passwordAgain))
+            {
+                val message = getString(R.string.error_invalid_password_again)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun switchToLoginMode()
+    {
+        mainText.text = getString(R.string.text_login)
+        btnConfirm.text = getString(R.string.button_login)
+        btnSwitch.text = getString(R.string.text_register)
+        inEmail.visibility = View.VISIBLE
+        inName.visibility = View.GONE
+        inSurname.visibility = View.GONE
+        inPassword.visibility = View.VISIBLE
+        inPasswordAgain.visibility = View.GONE
+    }
+
+    private fun switchToRegisterMode()
+    {
+        mainText.text = getString(R.string.text_register)
+        btnConfirm.text = getString(R.string.button_register)
+        btnSwitch.text = getString(R.string.text_login)
+        inEmail.visibility = View.VISIBLE
+        inName.visibility = View.VISIBLE
+        inSurname.visibility = View.VISIBLE
+        inPassword.visibility = View.VISIBLE
+        inPasswordAgain.visibility = View.VISIBLE
     }
 
     private fun initializeUI()
@@ -154,81 +228,5 @@ class MainActivity : AppCompatActivity() {
         surname = inSurname.text.toString()
         password = inPassword.text.toString()
         passwordAgain = inPasswordAgain.text.toString()
-    }
-
-
-    private fun checkFormValidity(): Boolean
-    {
-        gatherInput()
-        if (currentFormMode == FormMode.Login)
-        {
-            if(!DataVerifier.isEmailValid(email))
-            {
-                sendMonit(getString(R.string.error_invalid_email))
-                return false
-            }
-            if(!DataVerifier.isPasswordValid(password))
-            {
-                sendMonit(getString(R.string.error_invalid_password))
-                return false
-            }
-        }
-        if(currentFormMode == FormMode.Register)
-        {
-            if(!DataVerifier.isEmailValid(email))
-            {
-                sendMonit(getString(R.string.error_invalid_email))
-                return false
-            }
-            if(!DataVerifier.isNameValid(name))
-            {
-                sendMonit(getString(R.string.error_invalid_name))
-                return false
-            }
-            if(!DataVerifier.isSurnameValid(surname))
-            {
-                sendMonit(getString(R.string.error_invalid_surname))
-                return false
-            }
-            if(!DataVerifier.isPasswordValid(password))
-            {
-                sendMonit(getString(R.string.error_invalid_password))
-                return false
-            }
-            if(!DataVerifier.isPasswordAgainValid(password, passwordAgain))
-            {
-                sendMonit(getString(R.string.error_invalid_password_again))
-                return false
-            }
-        }
-        return true
-    }
-    private fun sendMonit(text: String)
-    {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun switchToLoginMode()
-    {
-        mainText.text = getString(R.string.text_login)
-        btnConfirm.text = getString(R.string.button_login)
-        btnSwitch.text = getString(R.string.text_register)
-        inEmail.visibility = View.VISIBLE
-        inName.visibility = View.GONE
-        inSurname.visibility = View.GONE
-        inPassword.visibility = View.VISIBLE
-        inPasswordAgain.visibility = View.GONE
-    }
-
-    private fun switchToRegisterMode()
-    {
-        mainText.text = getString(R.string.text_register)
-        btnConfirm.text = getString(R.string.button_register)
-        btnSwitch.text = getString(R.string.text_login)
-        inEmail.visibility = View.VISIBLE
-        inName.visibility = View.VISIBLE
-        inSurname.visibility = View.VISIBLE
-        inPassword.visibility = View.VISIBLE
-        inPasswordAgain.visibility = View.VISIBLE
     }
 }

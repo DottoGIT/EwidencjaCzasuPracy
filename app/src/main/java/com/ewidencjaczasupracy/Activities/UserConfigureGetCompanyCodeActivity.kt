@@ -1,4 +1,4 @@
-package com.ewidencjaczasupracy
+package com.ewidencjaczasupracy.Activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,8 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ewidencjaczasupracy.Firebase.DatabaseController
+import com.ewidencjaczasupracy.R
 
-class UserConfigureGetCompanyCode : AppCompatActivity() {
+class UserConfigureGetCompanyCodeActivity : AppCompatActivity() {
     private lateinit var helloText: TextView
     private lateinit var buttonProceed : Button
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,10 +23,14 @@ class UserConfigureGetCompanyCode : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         initializeUI()
         assignButtons()
-        UpdateUserName()
+        updateUserName()
+    }
+    private fun updateUserName()
+    {
+        val greeting = getString(R.string.greeting) + " " + DatabaseController.getCurrentUserName()
+        helloText.text = greeting
     }
 
     private fun initializeUI()
@@ -32,23 +38,13 @@ class UserConfigureGetCompanyCode : AppCompatActivity() {
         buttonProceed = findViewById(R.id.button_proceed)
         helloText = findViewById(R.id.hello_text)
     }
-
     private fun proceedButtonClick()
     {
-        val intent = Intent(this, AdminMainPage::class.java)
+        val intent = Intent(this, BossMainActivity::class.java)
         startActivity(intent)
     }
-
     private fun assignButtons()
     {
         buttonProceed.setOnClickListener{proceedButtonClick()}
     }
-
-    private fun UpdateUserName()
-    {
-
-        val greeting = getString(R.string.greeting) + " " + DatabaseController.getCurrentUser()!!.displayName!!.split(" ")[0] + "."
-        helloText.text = greeting
-    }
-
 }

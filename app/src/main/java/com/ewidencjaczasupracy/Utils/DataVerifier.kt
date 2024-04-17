@@ -1,4 +1,4 @@
-package com.ewidencjaczasupracy
+package com.ewidencjaczasupracy.Utils
 
 class DataVerifier {
     companion object{

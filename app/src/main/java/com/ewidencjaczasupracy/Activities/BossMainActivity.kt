@@ -1,12 +1,13 @@
-package com.ewidencjaczasupracy
+package com.ewidencjaczasupracy.Activities
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ewidencjaczasupracy.R
 
-class AdminMainPage : AppCompatActivity() {
+class BossMainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
