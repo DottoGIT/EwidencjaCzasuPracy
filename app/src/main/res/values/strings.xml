@@ -48,5 +48,6 @@
     <string name="error_invalid_surname">Niepoprawne nazwisko</string>
     <string name="error_invalid_password">Niepoprawne hasło</string>
     <string name="error_weak_password">podane hasło jest zbyt proste</string>
+    <string name="error_user_collision">Email juz w uzyciu</string>
     <string name="error_unknown">Operacja nie udała się</string>
 </resources>

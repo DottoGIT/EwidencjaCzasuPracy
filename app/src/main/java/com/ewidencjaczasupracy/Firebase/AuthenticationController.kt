@@ -1,6 +1,9 @@
 package com.ewidencjaczasupracy.Firebase
 
 import android.content.Context
+import android.content.Intent
+import com.ewidencjaczasupracy.Activities.EmailVerificationActivity
+import com.ewidencjaczasupracy.Activities.LoginActivity
 import com.ewidencjaczasupracy.Constants
 import com.ewidencjaczasupracy.R
 import com.ewidencjaczasupracy.interfaces.ILoginObserver
@@ -31,9 +34,14 @@ object AuthenticationController {
                 callback(task)
             }
     }
-    fun registerUser(email: String, password: String, name: String, surname: String, callback: (Task<AuthResult>) -> Unit) {
+    fun registerUser(email: String, password: String, callback: (Task<AuthResult>) -> Unit) {
         DatabaseController.firebase.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                callback(task)
+            if(task.isSuccessful)
+            {
+                lastLogged = DatabaseController.firebase.currentUser
+                notifyLoginObservers()
+            }
+            callback(task)
         }
     }
 

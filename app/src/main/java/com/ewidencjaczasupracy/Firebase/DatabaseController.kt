@@ -13,7 +13,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 
 object DatabaseController : ILoginObserver {
-    val firebase: FirebaseAuth = Firebase.auth
+    public val firebase: FirebaseAuth = Firebase.auth
     private var currentUser : FirebaseUser? = null
     val userDAO = UserDAO()
 
@@ -43,6 +43,10 @@ object DatabaseController : ILoginObserver {
         return currentUser!!
     }
 
+    fun isAllSetUp() : Boolean
+    {
+        return userDAO.isDAOReady()
+    }
 
 
     ///                     PRIVATE                     ///

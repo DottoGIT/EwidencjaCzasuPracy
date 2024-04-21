@@ -60,6 +60,9 @@ class LoginActivity : AppCompatActivity() {
         if(currentFormMode == FormMode.Login) {
             AuthenticationController.loginUser(email, password) { result ->
                 if (result.isSuccessful) {
+
+                    while(!DatabaseController.isAllSetUp()){}
+
                     confirmLoggingAttempt()
                 } else {
                     val message = DatabaseErrorHandling.getErrorMessage(this, result)
@@ -68,8 +71,11 @@ class LoginActivity : AppCompatActivity() {
             }
         }
         else if(currentFormMode == FormMode.Register) {
-            AuthenticationController.registerUser(email, password, name, surname) { result ->
+            AuthenticationController.registerUser(email, password) { result ->
                 if (result.isSuccessful) {
+
+                    while(!DatabaseController.isAllSetUp()){}
+
                     val intent = Intent(this, EmailVerificationActivity::class.java)
                     startActivity(intent)
                 } else {

@@ -1,15 +1,10 @@
 package com.ewidencjaczasupracy.Firebase.DAOs
 
+import android.util.Log
 import com.ewidencjaczasupracy.Constants
-import com.ewidencjaczasupracy.Firebase.DatabaseController
-import com.ewidencjaczasupracy.interfaces.ILoginObserver
-import com.google.android.gms.common.internal.AccountType
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.userProfileChangeRequest
-import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import java.lang.IllegalStateException
 
 enum class UserAccountType
 {
@@ -20,39 +15,68 @@ enum class UserAccountType
 
 
 class UserDAO {
-    private var currentUserDocument : DocumentReference? = null
+    private var currentUserDocument : DocumentSnapshot? = null
 
-    fun getCurrentUserAccountType() : UserAccountType
+    fun getCurrentUserAccountType(): UserAccountType
     {
-        return UserAccountType.Undefined
-        TODO("DODAĆ ZBIERANIE TYPU KONTA UŻYTKOWNIKA")
+        return currentUserDocument!!.get("account_type") as UserAccountType
     }
 
     fun getCurrentUserName() : String
     {
-        return "NAME"
-        TODO("DODAĆ ZBIERANIE NAZWY UŻYKOTWNIKA")
+        return currentUserDocument!!.getString("name")!!
     }
 
     fun getCurrentUserEmail() : String
     {
-        return "MAIL"
-        TODO("DODAĆ ZBIERANIE MAILA UŻYKOTWNIKA")
+        return currentUserDocument!!.getString("email")!!
     }
 
     fun setCurrentUserDocument(user : FirebaseUser)
     {
-        FirebaseFirestore.getInstance().collection(Constants.USERS_COLLECTION).document(user.uid)
-            .get().addOnSuccessListener { documentSnapshot ->
-                if(documentSnapshot.exists())
-                {
-                    currentUserDocument = documentSnapshot.reference
-                }
-                else
-                {
-                    createUserDocument(user){ reference -> currentUserDocument = reference}
+        Log.d("Yahoo", " Start")
+        val docRef = FirebaseFirestore.getInstance().collection(Constants.USERS_COLLECTION).document(user.uid)
+        Log.d("Yahoo", " Got")
+        docRef.get().addOnSuccessListener { documentSnapshot ->
+            if(documentSnapshot.exists())
+            {
+                Log.d("Yahoo", "Exists")
+                currentUserDocument = documentSnapshot
+            }
+            else
+            {
+                Log.d("Yahoo", "Not Exist")
+                createUserDocument(user){ reference ->
+                    currentUserDocument = reference
                 }
             }
+        }.addOnFailureListener{_ ->
+            Log.d("Yahoo", "Fail")
+        }
+        Log.d("Yahoo", " Git")
+        while(currentUserDocument == null) {}
+        TODO("Function doesnt go into Listeners")
+    }
+
+    private fun createUserDocument(user: FirebaseUser, callback: (DocumentSnapshot?) -> Unit)
+    {
+
+        val usersCollection = FirebaseFirestore.getInstance().collection(Constants.USERS_COLLECTION)
+        val userData = hashMapOf(
+            "userId" to user.uid,
+            "email" to user.email,
+            "name" to separateName(user),
+            "surname" to separateSurname(user),
+            "account_type" to UserAccountType.Undefined
+        )
+
+        usersCollection.document(user.uid).set(userData).addOnSuccessListener { _ ->
+            usersCollection.document(user.uid).get().addOnSuccessListener{snapshot ->
+                callback(snapshot)
+            }
+        }.addOnFailureListener{
+            callback(null)
+        }
     }
 
     fun deleteCurrentUserDocument()
@@ -60,9 +84,17 @@ class UserDAO {
         currentUserDocument = null
     }
 
-    private fun createUserDocument(user: FirebaseUser, callback: (DocumentReference?) -> Unit)
+    fun isDAOReady() : Boolean
     {
-        callback(null)
-        TODO("DODAĆ TWORZENIE DOKUMENTU UŻYKOTWNIKA")
+        return currentUserDocument != null
     }
+
+
+    private fun separateName(user: FirebaseUser): String {
+        return user.displayName!!.split(" ")[0]
+    }
+    private fun separateSurname(user: FirebaseUser): String {
+        return user.displayName!!.split(" ")[1]
+    }
+
 }

@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 
 object DatabaseErrorHandling {
@@ -14,20 +15,17 @@ object DatabaseErrorHandling {
         if(task == null)
             return context.getString(R.string.error_unknown)
 
-        if(task.isSuccessful)
-        {
-            return context.getString(R.string.monit_correct)
-        }
-        else
-        {
+        return if(task.isSuccessful) {
+            context.getString(R.string.monit_correct)
+        } else {
             val exception = task.exception
-            if(exception is FirebaseAuthWeakPasswordException)
-                return context.getString(R.string.error_weak_password)
-            if(exception is FirebaseAuthInvalidUserException || exception is FirebaseAuthInvalidCredentialsException)
-                return context.getString(R.string.error_user_not_found)
-            if(exception is FirebaseNetworkException)
-                return context.getString(R.string.error_no_connection)
+            when (exception) {
+                is FirebaseAuthWeakPasswordException -> context.getString(R.string.error_weak_password)
+                is FirebaseAuthInvalidUserException, is FirebaseAuthInvalidCredentialsException -> context.getString(R.string.error_user_not_found)
+                is FirebaseNetworkException -> context.getString(R.string.error_no_connection)
+                is FirebaseAuthUserCollisionException -> context.getString(R.string.error_user_collision) // Handle user already registered
+                else -> context.getString(R.string.error_unknown)
+            }
         }
-        return context.getString(R.string.error_unknown)
     }
 }
