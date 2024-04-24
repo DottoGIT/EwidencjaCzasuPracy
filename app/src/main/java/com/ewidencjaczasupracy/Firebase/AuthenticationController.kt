@@ -2,6 +2,7 @@ package com.ewidencjaczasupracy.Firebase
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.ewidencjaczasupracy.Activities.EmailVerificationActivity
 import com.ewidencjaczasupracy.Activities.LoginActivity
 import com.ewidencjaczasupracy.Constants
@@ -20,53 +21,37 @@ import com.google.firebase.auth.auth
 import com.google.firebase.auth.userProfileChangeRequest
 
 object AuthenticationController {
-    private val loginObservers : MutableList<ILoginObserver> = ArrayList()
-    private var lastLogged : FirebaseUser? = null
+    private val observers = mutableListOf<ILoginObserver>()
+
     fun loginUser(email: String, password: String, callback: (Task<AuthResult>) -> Unit)
     {
-        DatabaseController.firebase.signInWithEmailAndPassword(email, password)
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
             .addOnCompleteListener {task ->
                 if(task.isSuccessful)
                 {
-                    lastLogged = DatabaseController.firebase.currentUser
-                    notifyLoginObservers()
+                    notifyObserversLogIn()
                 }
                 callback(task)
             }
     }
     fun registerUser(email: String, password: String, callback: (Task<AuthResult>) -> Unit) {
-        DatabaseController.firebase.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if(task.isSuccessful)
             {
-                lastLogged = DatabaseController.firebase.currentUser
-                notifyLoginObservers()
+                notifyObserversLogIn()
             }
             callback(task)
         }
     }
 
-    fun signOut()
-    {
-        notifyLogoutObservers()
-        DatabaseController.firebase.signOut()
-    }
-
     fun registerLoginObserver(observer: ILoginObserver)
     {
-        loginObservers.add(observer)
+        observers.add(observer)
     }
-    private fun notifyLoginObservers()
-    {
-        for(observer in loginObservers)
-        {
-            observer.loggedIn(lastLogged!!)
-        }
-    }
-    private fun notifyLogoutObservers()
-    {
-        for(observer in loginObservers)
-        {
-            observer.loggedOut(lastLogged)
+
+    private fun notifyObserversLogIn() {
+        for (observer in observers) {
+            observer.notifyLogIn()
         }
     }
 }

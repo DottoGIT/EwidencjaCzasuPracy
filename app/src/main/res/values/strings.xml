@@ -50,4 +50,5 @@
     <string name="error_weak_password">podane hasło jest zbyt proste</string>
     <string name="error_user_collision">Email juz w uzyciu</string>
     <string name="error_unknown">Operacja nie udała się</string>
+    <string name="error_connection_lost">Blad serwera danych</string>
 </resources>

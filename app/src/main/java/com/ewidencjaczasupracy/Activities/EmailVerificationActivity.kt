@@ -59,7 +59,8 @@ class EmailVerificationActivity : AppCompatActivity() {
         startActivity(intent)
     }
     private fun resendVerification(){
-        EmailVerificationHandler.sendVerificationEmail(DatabaseController.getCurrentUser()) { result ->
+        val user = DatabaseController.getCurrentUser()!!
+        EmailVerificationHandler.sendVerificationEmail(user) { result ->
             if (result.isSuccessful) {
                 val text = getString(R.string.monit_email_sent)
                 Toast.makeText(this, text, Toast.LENGTH_SHORT).show()

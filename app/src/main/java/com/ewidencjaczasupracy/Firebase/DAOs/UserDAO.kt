@@ -2,9 +2,15 @@ package com.ewidencjaczasupracy.Firebase.DAOs
 
 import android.util.Log
 import com.ewidencjaczasupracy.Constants
+import com.ewidencjaczasupracy.Firebase.AuthenticationController
+import com.ewidencjaczasupracy.Firebase.DatabaseController
+import com.ewidencjaczasupracy.interfaces.ILoginObserver
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.concurrent.CountDownLatch
 
 enum class UserAccountType
 {
@@ -13,49 +19,60 @@ enum class UserAccountType
     Undefined
 }
 
-
-class UserDAO {
+class UserDAO : ILoginObserver {
     private var currentUserDocument : DocumentSnapshot? = null
+    init {
+        AuthenticationController.registerLoginObserver(this)
+    }
 
     fun getCurrentUserAccountType(): UserAccountType
     {
-        return currentUserDocument!!.get("account_type") as UserAccountType
+        return UserAccountType.Undefined
+        //return currentUserDocument!!.get("account_type") as UserAccountType
     }
 
     fun getCurrentUserName() : String
     {
+        if(currentUserDocument == null)
+        {
+            return ": ("
+        }
         return currentUserDocument!!.getString("name")!!
     }
 
     fun getCurrentUserEmail() : String
     {
-        return currentUserDocument!!.getString("email")!!
+        return "nieznom@wp.pl"
+        //return currentUserDocument!!.getString("email")!!
     }
 
-    fun setCurrentUserDocument(user : FirebaseUser)
+    private fun setCurrentUserDocument(callback: (Boolean) -> Unit)
     {
+        val user = DatabaseController.getCurrentUser()
+        if(user == null)
+        {
+            callback(false)
+            return
+        }
         Log.d("Yahoo", " Start")
-        val docRef = FirebaseFirestore.getInstance().collection(Constants.USERS_COLLECTION).document(user.uid)
-        Log.d("Yahoo", " Got")
-        docRef.get().addOnSuccessListener { documentSnapshot ->
-            if(documentSnapshot.exists())
-            {
-                Log.d("Yahoo", "Exists")
-                currentUserDocument = documentSnapshot
-            }
-            else
-            {
-                Log.d("Yahoo", "Not Exist")
-                createUserDocument(user){ reference ->
-                    currentUserDocument = reference
+        FirebaseFirestore.getInstance().collection("users").document("siema")
+            .get().addOnCompleteListener { task ->
+                Log.d("Yahoo", " WOW")
+                if(task.isSuccessful)
+                {
+                    Log.d("Yahoo", "Exist")
+                    currentUserDocument = task.result
+                    callback(true)
+                }
+                else
+                {
+                    Log.d("Yahoo", "Not Exist")
+                    createUserDocument(user){ reference ->
+                        currentUserDocument = reference
+                        callback(reference != null)
                 }
             }
-        }.addOnFailureListener{_ ->
-            Log.d("Yahoo", "Fail")
         }
-        Log.d("Yahoo", " Git")
-        while(currentUserDocument == null) {}
-        TODO("Function doesnt go into Listeners")
     }
 
     private fun createUserDocument(user: FirebaseUser, callback: (DocumentSnapshot?) -> Unit)
@@ -84,12 +101,6 @@ class UserDAO {
         currentUserDocument = null
     }
 
-    fun isDAOReady() : Boolean
-    {
-        return currentUserDocument != null
-    }
-
-
     private fun separateName(user: FirebaseUser): String {
         return user.displayName!!.split(" ")[0]
     }
@@ -97,4 +108,11 @@ class UserDAO {
         return user.displayName!!.split(" ")[1]
     }
 
+    override fun notifyLogIn() {
+        val latch = CountDownLatch(1)
+        setCurrentUserDocument{
+            latch.countDown()
+        }
+        latch.await()
+    }
 }
