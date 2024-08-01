@@ -5,6 +5,8 @@ An unfinished mobile app project written in Kotlin, initially designed for shari
 Most of my work (not generated automatically) is stored in [**source**](app/src/main/java/com/ewidencjaczasupracy) folder.
 
 ## Screenshots
-![Screenshot 3](screenshots/screen3.png)
-![Screenshot 2](screenshots/screen2.png)
-![Screenshot 4](screenshots/screen4.png)
+<div style="display: flex; justify-content: space-between;">
+  <img src="screenshots/screen3.png" alt="Screenshot 3" style="width: 32%;"/>
+  <img src="screenshots/screen2.png" alt="Screenshot 2" style="width: 32%;"/>
+  <img src="screenshots/screen4.png" alt="Screenshot 4" style="width: 32%;"/>
+</div>
