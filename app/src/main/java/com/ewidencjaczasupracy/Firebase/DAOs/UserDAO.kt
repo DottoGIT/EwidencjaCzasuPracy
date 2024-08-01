@@ -54,19 +54,15 @@ class UserDAO : ILoginObserver {
             callback(false)
             return
         }
-        Log.d("Yahoo", " Start")
         FirebaseFirestore.getInstance().collection("users").document("siema")
             .get().addOnCompleteListener { task ->
-                Log.d("Yahoo", " WOW")
                 if(task.isSuccessful)
                 {
-                    Log.d("Yahoo", "Exist")
                     currentUserDocument = task.result
                     callback(true)
                 }
                 else
                 {
-                    Log.d("Yahoo", "Not Exist")
                     createUserDocument(user){ reference ->
                         currentUserDocument = reference
                         callback(reference != null)
