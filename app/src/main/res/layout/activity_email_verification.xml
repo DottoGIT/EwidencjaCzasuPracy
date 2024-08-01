@@ -34,7 +34,7 @@
             android:id="@+id/textView_greeting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/greeting"
+            android:text="Witaj _username_"
             android:textColor="@color/white"
             android:textSize="@dimen/h3" />
 
@@ -51,7 +51,7 @@
             android:id="@+id/textView_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/empty_value"
+            android:text="mock.mail@gmail.com"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:layout_marginTop="@dimen/border_margin"
